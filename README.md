@@ -5,13 +5,13 @@ A beautiful, static, single-file blog platform. No database, backend, build step
 ## Features
 
 - Responsive editorial-style reading experience with featured-story slider.
-- Post editor with drafts, published stories, categories, tags, cover images, excerpts, and reading-time estimates.
+- Post editor with drafts, published stories, categories, tags, cover images, excerpts, reading-time estimates, and basic Markdown formatting.
 - Search, category filters, bookmarks, shareable story links, and pagination.
 - Warm paper, midnight, and sepia themes; configurable accent colour, site identity, and custom hero background image.
 - AES-256-GCM encrypted JSON vault using PBKDF2-SHA-256 (310,000 iterations).
 - Encrypted backup and restore; encrypted local browser cache.
 - Optional direct publishing of the encrypted vault to GitHub.
-- GitHub Pages workflow included.
+- GitHub Pages workflow included; the workflow attempts to enable Pages when it is not already configured.
 
 ## First-time setup
 
@@ -24,7 +24,7 @@ A beautiful, static, single-file blog platform. No database, backend, build step
 
 ## GitHub Pages
 
-The `.github/workflows/pages.yml` workflow deploys `index.html` and the optional `data/vault.json` file whenever `main` changes. In the repository, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. The first deployment may need this one-time setting.
+The `.github/workflows/pages.yml` workflow deploys `index.html` and the optional `data/vault.json` file whenever `main` changes. The workflow asks GitHub to enable Pages with GitHub Actions as its deployment source. If the first deployment still reports that Pages is disabled, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**.
 
 After publishing a vault from the editor, GitHub Actions will redeploy the site and readers can unlock the latest encrypted vault using the reader passphrase.
 
