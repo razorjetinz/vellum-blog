@@ -1,50 +1,44 @@
 # Vellum — a database-free encrypted blog
 
-Vellum is a static, responsive blog platform. It has no backend, database, build step, or runtime dependencies. Posts, themes, settings, and image data are stored in one encrypted JSON vault.
+A beautiful, static, single-file blog platform. No database, backend, build step, or runtime dependency is needed.
 
 ## Features
 
-- Responsive editorial-style blog layout with a featured story slider.
-- Post editor with drafts, categories, tags, cover images, Markdown, reading time, and reading view.
-- Search, category filters, sorting, pagination, bookmarks, and sharing.
-- Custom hero backgrounds, about image, accent colour, and warm-paper / midnight / sepia themes.
-- AES-256-GCM encrypted JSON vault, encrypted backup export, and restore.
+- Responsive editorial-style reading experience with featured-story slider.
+- Post editor with drafts, published stories, categories, tags, cover images, excerpts, and reading-time estimates.
+- Search, category filters, bookmarks, shareable story links, and pagination.
+- Warm paper, midnight, and sepia themes; configurable accent colour, site identity, and custom hero background image.
+- AES-256-GCM encrypted JSON vault using PBKDF2-SHA-256 (310,000 iterations).
+- Encrypted backup and restore; encrypted local browser cache.
 - Optional direct publishing of the encrypted vault to GitHub.
-- GitHub Pages deployment workflow.
-- No cookies, tracking scripts, database, or app server.
-
-## Encryption model and important limitations
-
-Vellum is a **password-protected journal**, not a public SEO blog. Readers enter the blog passphrase to decrypt and read content. The editor passphrase is separate and unlocks the writing desk. The browser derives an AES-256-GCM key using PBKDF2-SHA-256; passphrases are never written into the vault or sent to a server.
-
-A static website cannot keep content both encrypted and publicly readable without distributing a decryption key. Anyone who knows the blog passphrase can read the content. The editor passphrase is a client-side writing-desk gate, not server-enforced authorization. The GitHub publishing token controls repository writes; keep it private and restrict it to this repository.
-
-The browser caches only the encrypted vault in local storage. Decrypted content and passphrases stay in memory while the page is open. Download encrypted backups regularly. If the blog passphrase is lost, the encrypted content cannot be recovered. Cover images are embedded in the encrypted JSON, so keep them reasonably small.
+- GitHub Pages workflow included.
 
 ## First-time setup
 
-1. Host the site over HTTPS (GitHub Pages is supported) or on localhost. Web Crypto requires a secure context.
-2. On first open, create a blog passphrase for readers and a different editor passphrase.
-3. Open **Writer's desk** and add stories. Markdown is supported in story bodies.
-4. In **Appearance**, set the title, colours, background images, home-page copy, and slider interval.
-5. In **Publish & backup**, download a vault backup or publish `data/vault.json` directly to GitHub.
+1. Open the site over HTTPS or on localhost (Web Crypto requires a secure context).
+2. On first run, choose a reader passphrase and a separate editor passphrase. Use strong, unique passphrases.
+3. Add stories using **Writer's desk**. The reader passphrase is used to encrypt all blog data.
+4. Adjust the site title, introduction, theme, accent colour, and background image under **Appearance**.
+5. Use **Download encrypted backup** regularly.
+6. To publish the encrypted data, create a fine-grained GitHub personal access token limited to this repository with **Contents: Read and write**. In the Writer's desk, enter the repository, branch, token and vault path (`data/vault.json`), then select **Publish encrypted vault**. The token is kept in page memory only and cleared after publishing.
 
-## GitHub Pages deployment
+## GitHub Pages
 
-1. Push the project files to the `main` branch.
-2. In GitHub, open **Settings → Pages** and set the source to **GitHub Actions**.
-3. The included `.github/workflows/pages.yml` workflow deploys the site when you push to `main`.
-4. Open the deployed site and complete first-time setup.
-5. In Writer's desk → Publish & backup, enter the repository owner, name, branch, and vault path (`data/vault.json`).
-6. Create a fine-grained personal access token restricted to this repository with **Contents: Read and write**. Paste it into the token field only when publishing. The app does not store the token.
+The `.github/workflows/pages.yml` workflow deploys `index.html` and the optional `data/vault.json` file whenever `main` changes. In the repository, open **Settings → Pages** and set **Build and deployment → Source** to **GitHub Actions**. The first deployment may need this one-time setting.
+
+After publishing a vault from the editor, GitHub Actions will redeploy the site and readers can unlock the latest encrypted vault using the reader passphrase.
+
+## Encryption and privacy model
+
+The vault contains only encrypted JSON. AES-256-GCM encrypts the data; PBKDF2-SHA-256 derives the key from the reader passphrase. The passphrase is never stored in the vault. The browser stores only the encrypted vault in local storage.
+
+This is a **password-protected blog**, not a public SEO blog. Readers must enter the blog passphrase to decrypt and read the stories. Anyone who knows that passphrase can read the journal. The separate editor passphrase only gates the writing interface in the browser; it is not server-enforced authorization and should not be treated as multi-user access control. The static site cannot provide server-side permissions or comments.
+
+Cover images added by URL are displayed as external images and are not encrypted within the vault. Do not use sensitive image URLs. For stronger privacy, use non-sensitive images or remove the image URLs.
 
 ## Local testing
 
-Run `python3 -m http.server 8000` in the project directory, then open http://localhost:8000. Do not use a `file://` URL because browser Web Crypto and fetch require a secure context.
-
-## Limitations
-
-There is no server-side comments system, newsletter delivery, analytics, or multi-user collaboration. Posts are rendered after readers unlock the vault, so article text is not indexed by search engines. Anyone with the blog passphrase can read the journal.
+Run `python3 -m http.server 8000` from the repository directory and open http://localhost:8000.
 
 ## License
 
